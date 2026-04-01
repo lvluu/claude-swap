@@ -55,14 +55,27 @@ CREATE TABLE profiles (
   tags JSON                     -- ["work", "personal", "proxy"]
 );
 
+-- Sessions table (per-terminal active profiles)
+CREATE TABLE sessions (
+  id TEXT PRIMARY KEY,          -- TTY path or generated session ID (e.g., "_dev_ttyp0", "_pts_1")
+  profile_id TEXT,               -- Active profile for this session
+  terminal TEXT,                 -- Terminal identifier (TTY path, tmux pane, etc.)
+  started_at INTEGER,
+  last_activity INTEGER,
+  metadata JSON,                 -- Shell type, working directory, etc.
+  FOREIGN KEY (profile_id) REFERENCES profiles(id)
+);
+
 -- Usage tracking
 CREATE TABLE usage_log (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   profile_id TEXT,
+  session_id TEXT,               -- Link to specific terminal session
   timestamp INTEGER,
   tokens_used INTEGER,
   model TEXT,
-  FOREIGN KEY (profile_id) REFERENCES profiles(id)
+  FOREIGN KEY (profile_id) REFERENCES profiles(id),
+  FOREIGN KEY (session_id) REFERENCES sessions(id)
 );
 
 -- Quotas
@@ -82,6 +95,12 @@ CREATE TABLE settings (
   key TEXT PRIMARY KEY,
   value JSON
 );
+
+-- Indexes for performance
+CREATE INDEX idx_sessions_profile ON sessions(profile_id);
+CREATE INDEX idx_sessions_terminal ON sessions(terminal);
+CREATE INDEX idx_sessions_last_activity ON sessions(last_activity DESC);
+CREATE INDEX idx_usage_log_session ON usage_log(session_id);
 ```
 
 ---
@@ -150,9 +169,21 @@ Options:
    - How to activate in current shell (if temporary)
 ```
 
-**Shell Integration**:
+**Shell Integration (Per-Terminal Sessions)**:
 
-**Option A - Eval Mode (Temporary, per-shell)**:
+**IMPORTANT**: Each terminal session maintains its own active profile independently. This is the default behavior.
+
+```bash
+# Terminal 1: Work profile
+eval $(ccs switch work@example.com --shell)
+export ANTHROPIC_AUTH_TOKEN="sk-ff..."
+
+# Terminal 2: Personal profile (INDEPENDENT)
+eval $(ccs switch personal@gmail.com --shell)
+export ANTHROPIC_AUTH_TOKEN="sk-ab..."  # Different!
+```
+
+**Option A - Eval Mode (DEFAULT, Per-Terminal, Recommended)**:
 ```bash
 # User runs:
 eval $(ccs switch work@example.com --shell)
@@ -161,20 +192,100 @@ eval $(ccs switch work@example.com --shell)
 export ANTHROPIC_AUTH_TOKEN="sk-ff5c21..."
 export ANTHROPIC_BASE_URL="https://pro-x.io.vn/"
 
-# For convenience, add to shell config:
-alias ccs-switch='eval $(ccs switch "$1" --shell)'
+# Add to shell config for convenience:
+# ~/.bashrc or ~/.zshrc:
+ccs() {
+  if [[ $1 == "switch" ]]; then
+    shift
+    eval $(command ccs switch "$@" --shell)
+    return $?
+  fi
+  command ccs "$@"
+}
+
+# Now just run:
+ccs switch work@example.com  # Auto-evals in current shell
 ```
 
-**Option B - Persistent Mode (Updates shell config)**:
+**Per-Terminal Session Tracking**:
+
+Each terminal session is tracked independently using TTY or session ID:
+
+```typescript
+// Session identification
+interface Session {
+  id: string;           // TTY path or generated session ID
+  profile_id: string;   // Active profile for this session
+  started_at: number;
+  last_activity: number;
+}
+
+// Get current terminal session
+function getSession(): Session {
+  const tty = process.env.TTY || process.stdout.fd;
+  // Or use shell hook to inject unique CCS_SESSION_ID
+  const sessionId = process.env.CCS_SESSION_ID || generateSessionId();
+  return db.sessions.get(sessionId);
+}
+```
+
+**Session Management Features**:
+
 ```bash
-# User runs:
+# Show active sessions across terminals
+ccs sessions
+
+# Output:
+# Session ID    Terminal    Profile             Started
+# ─────────────────────────────────────────────────────
+# abc123        pts/0       work@example.com    2h ago
+# def456        pts/1       personal@gmail.com  30m ago
+# ghi789        pts/2       client@client.io     5m ago
+
+# Kill inactive sessions
+ccs sessions --clean
+
+# Session file location
+~/.config/ccs/sessions/{tty_or_session_id}.json
+```
+
+**Shell Hook for Auto-Session Detection** (Optional):
+
+Add to `.bashrc`/`.zshrc`:
+```bash
+# Auto-generate unique session ID per terminal
+export CCS_SESSION_ID=$(tty | tr '/' '_')
+# Or for screen/tmux sessions:
+# export CCS_SESSION_ID="${TMUX_PANE:-$(tty | tr '/' '_')}"
+
+# Wrapper function for automatic session tracking
+ccs() {
+  case "$1" in
+    switch)
+      shift
+      eval $(command ccs switch "$@" --session "$CCS_SESSION_ID" --shell)
+      ;;
+    current)
+      command ccs current --session "$CCS_SESSION_ID"
+      ;;
+    *)
+      command ccs "$@"
+      ;;
+  esac
+}
+```
+
+**Option B - Persistent Mode (Global, NOT RECOMMENDED for per-terminal)**:
+```bash
+# WARNING: This affects ALL terminals
+# Only use if you want one profile everywhere
 ccs switch work@example.com --persistent
 
 # ccs writes to ~/.bashrc or ~/.zshrc:
 export ANTHROPIC_AUTH_TOKEN="sk-ff5c21..."
 export ANTHROPIC_BASE_URL="https://pro-x.io.vn/"
 
-# Requires shell restart or: source ~/.bashrc
+# Requires: source ~/.bashrc or restart shell
 ```
 
 **Option C - Project-local (.env file)**:
@@ -608,7 +719,7 @@ ccs rotate enable --strategy quota-based --threshold 80%
 - **Least-used**: Select profile with lowest usage
 - **Cost-optimized**: Select profile with best rate limits
 
-### 5. Profile Health Checks
+### 6. Profile Health Checks
 
 **`ccs doctor` command**:
 ```bash
@@ -625,7 +736,7 @@ ccs doctor --fix               # Auto-fix issues
 - ⚠️ Unusual usage patterns
 - ❌ Invalid/expired tokens
 
-### 6. Workspace Integration
+### 7. Workspace Integration
 
 **`ccs workspace` command**:
 ```bash
@@ -648,7 +759,193 @@ env:
   CLAUDE_ORG_ID: org_123
 ```
 
-### 7. Fun Features
+### 7. Per-Terminal Session Management
+
+**Purpose**: Each terminal maintains its own active profile independently, allowing simultaneous use of different profiles across terminals.
+
+**Architecture**:
+
+```
+Terminal 1 (tty/0): work@example.com
+Terminal 2 (tty/1): personal@gmail.com
+Terminal 3 (tmux:0.0): client@client.io
+
+Sessions stored in: ~/.config/ccs/sessions/{session_id}.json
+```
+
+**Session Identification Methods**:
+
+| Method | Identifier | Scope | Example |
+|--------|------------|-------|---------|
+| **TTY Path** | `/dev/tty/` path | Per terminal window | `_dev_ttyp0` |
+| **TMUX Pane** | `$TMUX_PANE` | Per tmux pane | `%0` |
+| **Screen Session** | `$STY` | Per screen session | `12345.pts-0.hostname` |
+| **Custom ID** | User-defined | Per custom scope | `my-session-id` |
+
+**`ccs sessions` command**:
+```bash
+ccs sessions                    # List all active sessions
+ccs sessions --current          # Show current terminal's session
+ccs sessions --clean            # Remove stale sessions (>24h inactive)
+ccs sessions --kill <session>   # Kill a specific session
+
+# Example output:
+# Session ID    Terminal    Profile             Started    Last Active
+# ───────────────────────────────────────────────────────────────────
+# _dev_ttyp0    /dev/tty/0  work@example.com    2h ago     5m ago
+# _dev_ttyp1    /dev/tty/1  personal@gmail.com  30m ago    30m ago
+# %0            tmux:0.0    client@client.io    5m ago     5m ago
+```
+
+**Session-Aware Commands**:
+
+All commands can operate on specific sessions:
+
+```bash
+# Switch profile in current terminal only
+ccs switch work@example.com
+
+# Switch profile in specific session
+ccs switch personal@gmail.com --session $_dev_ttyp1
+
+# Get current profile for this terminal
+ccs current
+
+# Get current profile for another session
+ccs current --session %0
+
+# Run command with specific profile
+ccs exec client@client.io -- claude chat
+```
+
+**Shell Integration (Automatic Session Tracking)**:
+
+Add to `.bashrc` or `.zshrc`:
+
+```bash
+# Auto-detect session ID
+export CCS_SESSION_ID="${TMUX_PANE:-$(tty | sed 's|/|_|g')}"
+
+# Wrapper function for session-aware switching
+ccs() {
+  case "$1" in
+    switch)
+      shift
+      eval $(command ccs switch "$@" --session "$CCS_SESSION_ID" --shell)
+      ;;
+    current)
+      command ccs current --session "$CCS_SESSION_ID" "$@"
+      ;;
+    exec)
+      shift
+      local profile="$1"
+      shift
+      CCS_PROFILE="$profile" CCS_SESSION_ID="$CCS_SESSION_ID" "$@"
+      ;;
+    sessions)
+      command ccs sessions "$@"
+      ;;
+    *)
+      command ccs "$@"
+      ;;
+  esac
+}
+
+# Prompt integration (optional)
+# Show current profile in shell prompt
+PS1='$(ccs current --short 2>/dev/null || echo "none") \$ '
+```
+
+**Session Persistence**:
+
+```typescript
+interface Session {
+  id: string;              // Unique session identifier
+  profile_id: string;      // Active profile
+  terminal: string;        // Terminal identifier
+  started_at: number;
+  last_activity: number;
+  metadata: {
+    shell: string;         // bash, zsh, fish
+    cwd: string;           // Working directory
+    parent_pid: number;    // Parent process ID
+  };
+}
+
+// Session lifecycle
+// 1. On switch: Create/update session
+// 2. On command: Update last_activity
+// 3. On exit: Mark as inactive (or auto-clean after 24h)
+```
+
+**Session Cleanup**:
+
+```bash
+# Automatic cleanup in background (via cron or systemd timer)
+# Removes sessions inactive for >24 hours
+
+# Manual cleanup
+ccs sessions --clean
+
+# Clean specific session
+ccs sessions --kill _dev_ttyp0
+```
+
+**Use Cases**:
+
+1. **Multiple Projects**: Different profile per project terminal
+2. **Client Work**: Switch between clients without affecting other terminals
+3. **Testing**: Multiple test accounts across terminals
+4. **Team Work**: Shared machine with different profiles per developer terminal
+
+**Implementation Details**:
+
+```typescript
+// Get current session
+function getCurrentSession(): Session {
+  const sessionId = process.env.CCS_SESSION_ID || 
+                    process.env.TMUX_PANE ||
+                    `tty_${process.stdout.fd}`;
+  
+  // Check for existing session
+  let session = db.sessions.get(sessionId);
+  
+  if (!session) {
+    // Create new session
+    session = {
+      id: sessionId,
+      profile_id: null, // No profile yet
+      terminal: process.env.TTY || 'unknown',
+      started_at: Date.now(),
+      last_activity: Date.now(),
+      metadata: {
+        shell: process.env.SHELL,
+        cwd: process.cwd(),
+        parent_pid: process.ppid
+      }
+    };
+    db.sessions.create(session);
+  }
+  
+  return session;
+}
+
+// Switch profile for current session
+function switchProfile(profileId: string, sessionId?: string): void {
+  const sid = sessionId || getCurrentSession().id;
+  
+  db.sessions.update(sid, {
+    profile_id: profileId,
+    last_activity: Date.now()
+  });
+  
+  // Output env vars for current shell
+  console.log(`export CCS_CURRENT_PROFILE="${profileId}"`);
+  // ... output ANTHROPIC_AUTH_TOKEN, etc.
+}
+```
+
+### 8. Fun Features
 
 #### Profile Avatars (ASCII Art)
 ```
