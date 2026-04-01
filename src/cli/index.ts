@@ -1,5 +1,12 @@
 import { Command } from "commander";
 import { VERSION } from "../version.js";
+import { initCli } from "./init.js";
+import {
+  switchCommand,
+  addCommand,
+  removeCommand,
+  defaultCommand,
+} from "./commands/index.js";
 
 const program = new Command();
 
@@ -19,8 +26,8 @@ program
   .option("--shell", "Output as shell exports")
   .option("--persistent", "Write to shell config globally")
   .option("--local", "Write to .env in current directory")
-  .action((_profile, _opts) => {
-    console.log("switch command - implementation pending");
+  .action(async (profile, cmd) => {
+    await switchCommand(profile, cmd as Command);
   });
 
 program
@@ -33,15 +40,16 @@ program
   .option("--base-url <url>", "Custom API endpoint")
   .option("--name <name>", "Profile name/alias")
   .option("--email <email>", "Profile ID (email)")
-  .action((_opts) => {
-    console.log("add command - implementation pending");
+  .action(async (cmd) => {
+    await addCommand(cmd as Command);
   });
 
 program
   .command("remove <profile>")
   .description("Remove a profile")
-  .action((_profile) => {
-    console.log("remove command - implementation pending");
+  .option("-y, --force", "Skip confirmation prompt")
+  .action(async (profile, cmd) => {
+    await removeCommand(profile, cmd as Command);
   });
 
 program
@@ -50,6 +58,13 @@ program
   .option("--show-endpoints", "Show custom endpoint indicators")
   .action((_opts) => {
     console.log("list command - implementation pending");
+  });
+
+program
+  .command("default [profile]")
+  .description("Set or show the default profile")
+  .action(async (profile, cmd) => {
+    await defaultCommand(profile, cmd as Command);
   });
 
 program
@@ -143,4 +158,10 @@ program
 
 export { program };
 
-program.parse();
+// Initialize Encryption + Database before parsing
+initCli().then(() => {
+  program.parse();
+}).catch((err) => {
+  console.error((err as Error).message);
+  process.exit(1);
+});
