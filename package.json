@@ -1,0 +1,39 @@
+{
+  "name": "claude-swap",
+  "version": "0.0.1",
+  "description": "High-performance Bun-based CLI/TUI tool for managing Claude Code sessions and profiles",
+  "module": "src/cli/index.ts",
+  "bin": {
+    "ccs": "src/cli/index.ts"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/cli/index.ts",
+    "build": "bun build src/cli/index.ts --outdir dist --target node",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "lint": "eslint src/",
+    "format": "prettier --write src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clack/core": "^0.3.4",
+    "@clack/prompts": "^0.8.2",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "ora": "^8.1.1",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.14",
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  },
+  "keywords": ["claude", "profile", "cli", "tui", "anthropic"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lvluu/claude-swap.git"
+  }
+}
