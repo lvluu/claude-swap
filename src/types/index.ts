@@ -68,7 +68,12 @@ export type SwitchMode = "shell" | "persistent" | "local";
 
 export type AddMode = "oauth" | "manual" | "env";
 
-export type RotationStrategy = "round-robin" | "random" | "quota-based" | "least-used" | "cost-optimized";
+export type RotationStrategy =
+  | "round-robin"
+  | "random"
+  | "quota-based"
+  | "least-used"
+  | "cost-optimized";
 
 export interface ProfileGroup {
   name: string;

@@ -12,9 +12,12 @@
     "build": "bun build src/cli/index.ts --outdir dist --target node",
     "test": "bun test",
     "test:watch": "bun test --watch",
-    "lint": "eslint src/",
-    "format": "prettier --write src/",
-    "typecheck": "tsc --noEmit"
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt --write src/",
+    "format:check": "oxfmt --check src/",
+    "typecheck": "tsc --noEmit",
+    "ci": "bun run typecheck && bun run lint && bun run format:check && bun test"
   },
   "dependencies": {
     "@clack/core": "^0.3.4",
@@ -26,11 +29,17 @@
   },
   "devDependencies": {
     "@types/bun": "^1.1.14",
-    "eslint": "^9.17.0",
-    "prettier": "^3.4.2",
+    "oxfmt": "^0.43.0",
+    "oxlint": "^1.58.0",
     "typescript": "^5.7.2"
   },
-  "keywords": ["claude", "profile", "cli", "tui", "anthropic"],
+  "keywords": [
+    "claude",
+    "profile",
+    "cli",
+    "tui",
+    "anthropic"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
