@@ -7,11 +7,17 @@ import { touchSession } from "../../core/session.js";
 import { getFlags, info, warnSecurity, respond, respondError } from "../../utils/output.js";
 import type { Profile } from "../../types/index.js";
 
-export async function addCommand(cmd: Command): Promise<void> {
+export async function addCommand(
+  _profileName: string | undefined | Command,
+  cmd: Command,
+): Promise<void> {
   touchSession();
 
-  const flags = getFlags(cmd);
-  const opts = cmd.opts();
+  // When called from Commander action with no positional args, _profileName
+  // is actually the Command instance; detect and reassign.
+  const actualCmd = typeof _profileName === "object" ? _profileName : cmd;
+  const flags = getFlags(actualCmd);
+  const opts = actualCmd.opts();
 
   const tokenFromFlag = opts["token"] as string | undefined;
   const nameFromFlag = opts["name"] as string | undefined;

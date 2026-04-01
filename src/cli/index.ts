@@ -26,8 +26,8 @@ program
   .option("--shell", "Output as shell exports")
   .option("--persistent", "Write to shell config globally")
   .option("--local", "Write to .env in current directory")
-  .action(async (profile, cmd) => {
-    await switchCommand(profile, cmd as Command);
+  .action(async function (this: Command, profile: string | undefined) {
+    await switchCommand(profile, this);
   });
 
 program
@@ -40,8 +40,8 @@ program
   .option("--base-url <url>", "Custom API endpoint")
   .option("--name <name>", "Profile name/alias")
   .option("--email <email>", "Profile ID (email)")
-  .action(async (cmd) => {
-    await addCommand(cmd as Command);
+  .action(async function (this: Command) {
+    await addCommand(undefined, this as Command);
   });
 
 program
