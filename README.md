@@ -17,7 +17,7 @@ A high-performance Bun-based CLI/TUI tool for managing Claude Code sessions and 
 - `ccs current` - Show active profile and environment
 
 ### Custom Endpoints & Proxies
-- **API Proxies**: Use third-party proxies (pro-x.io.vn, openrouter.ai) for cost savings
+- **API Proxies**: Use third-party proxies for cost savings and rate limit management
 - **Custom Base URLs**: Set `ANTHROPIC_BASE_URL` for any endpoint
 - **Corporate Gateways**: Enterprise API gateways and self-hosted instances
 - **Development**: Local Claude instances, mock APIs, staging environments
@@ -25,12 +25,12 @@ A high-performance Bun-based CLI/TUI tool for managing Claude Code sessions and 
 ```bash
 # Add profile with custom endpoint
 ccs add --manual \
-  --token "sk-ff5c21..." \
-  --base-url "https://pro-x.io.vn/" \
---name "Pro-X Proxy"
+  --token "sk-ant-api03-xxxxx" \
+  --base-url "https://api.example.com/" \
+  --name "My Proxy"
 
 # Switch and auto-set env vars
-eval $(ccs switch proxy@custom.io --shell)
+eval $(ccs switch dev@example.com --shell)
 # Sets: ANTHROPIC_AUTH_TOKEN and ANTHROPIC_BASE_URL
 ```
 
