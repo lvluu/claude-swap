@@ -19,7 +19,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-02 for v0.2)
 
 **Core value**: Switch between Claude API accounts in < 1 second across any terminal, with per-terminal isolation and tokens stored securely.
 
-**Current focus**: Phase 1 — Interactive `ccs add`
+**Current focus**: Phase 5 — Interactive `ccs add` + OAuth2
 
 ---
 
@@ -35,10 +35,9 @@ See: `.planning/PROJECT.md` (updated 2026-04-02 for v0.2)
 
 | Phase | Milestone | Status | Notes |
 |-------|-----------|--------|-------|
-| 1 | v0.2 | 📋 Todo | Interactive `ccs add` + OAuth2 flow |
-| 2 | v0.2 | 📋 Todo | Per-profile base URL + switch integration |
-| 3 | v0.1 | ✅ Complete | CLI Parser & Command Wiring |
-| 4 | v0.1 | ✅ Complete | CLI Core (switch, add, remove, default, list, env) |
+| 5 | v0.2 | 📋 Todo | Interactive `ccs add` + OAuth2 flow |
+| 6 | v0.2 | 📋 Todo | Per-profile base URL + switch integration |
+| 1–4 | v0.1 | ✅ Complete | CLI Core (shipped v0.1) |
 
 ---
 
