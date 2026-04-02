@@ -27,7 +27,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-02 for v0.2)
 
 **Goal**: Interactive `ccs add` that guides users through profile creation — choosing auth type (oauth / manual / env), collecting the right info per type, and supporting per-profile base URLs.
 
-**Status**: Defining requirements
+**Status**: Phase 5 context gathered — ready for planning
 
 ---
 
