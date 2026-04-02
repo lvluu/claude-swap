@@ -1,6 +1,7 @@
 # Requirements: ccs — v0.2 Profile Management + OAuth2
 
 **Defined:** 2026-04-02
+**Updated:** 2026-04-02 (v0.2 phase mapping added)
 **Core Value:** Switch between Claude API accounts in < 1 second across any terminal, with per-terminal isolation and tokens stored securely.
 
 ## v1 Requirements
@@ -68,40 +69,74 @@
 |---------|--------|
 | Local OAuth redirect server | Adds complexity; manual code paste is simpler and portable |
 | PKCE code challenge/verifier | Anthropic OAuth2 doesn't require PKCE for this use case |
-| Token refresh in v0.2 | Deferred to after initial OAuth2 ship |
+| Token refresh in v0.2 | Deferred to after initial OAuth2 ship (Phase 13) |
 | `ccs login` as standalone command | `ccs add` covers the flow; separate command is redundant |
 | GUI or web interface | CLI only |
 | Cloud sync / cross-machine sharing | Machine-bound by design |
 
 ## Traceability
 
+### v0.2 Phase Mapping
+
+| Requirement | Phase | Milestone | Status |
+|-------------|-------|-----------|--------|
+| ADD-01 | Phase 5 | v0.2 | Pending |
+| ADD-02 | Phase 5 | v0.2 | Pending |
+| ADD-03 | Phase 5 | v0.2 | Pending |
+| ADD-04 | Phase 5 | v0.2 | Pending |
+| ADD-05 | Phase 5 | v0.2 | Pending |
+| OAUTH-01 | Phase 5 | v0.2 | Pending |
+| OAUTH-02 | Phase 5 | v0.2 | Pending |
+| OAUTH-03 | Phase 5 | v0.2 | Pending |
+| OAUTH-04 | Phase 5 | v0.2 | Pending |
+| OAUTH-05 | Phase 5 | v0.2 | Pending |
+| MANUAL-01 | Phase 5 | v0.2 | Pending |
+| MANUAL-02 | Phase 5 | v0.2 | Pending |
+| ENV-01 | Phase 5 | v0.2 | Pending |
+| ENV-02 | Phase 5 | v0.2 | Pending |
+| ENV-03 | Phase 5 | v0.2 | Pending |
+| BASE-01 | Phase 6 | v0.2 | Pending |
+| BASE-02 | Phase 6 | v0.2 | Pending |
+| BASE-03 | Phase 6 | v0.2 | Pending |
+| LIST-01 | Phase 5 | v0.2 | Pending |
+
+### Historical Coverage (all requirements)
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ADD-01 | Phase 1 | Pending |
-| ADD-02 | Phase 1 | Pending |
-| ADD-03 | Phase 1 | Pending |
-| ADD-04 | Phase 1 | Pending |
-| ADD-05 | Phase 1 | Pending |
-| OAUTH-01 | Phase 1 | Pending |
-| OAUTH-02 | Phase 1 | Pending |
-| OAUTH-03 | Phase 1 | Pending |
-| OAUTH-04 | Phase 1 | Pending |
-| OAUTH-05 | Phase 1 | Pending |
-| MANUAL-01 | Phase 1 | Pending |
-| MANUAL-02 | Phase 1 | Pending |
-| ENV-01 | Phase 1 | Pending |
-| ENV-02 | Phase 1 | Pending |
-| ENV-03 | Phase 1 | Pending |
-| BASE-01 | Phase 2 | Pending |
-| BASE-02 | Phase 2 | Pending |
-| BASE-03 | Phase 2 | Pending |
-| LIST-01 | Phase 1 | Pending |
+| ADD-01 | 5 | 🚧 Planned v0.2 |
+| ADD-02 | 5 | 🚧 Planned v0.2 |
+| ADD-03 | 5 | 🚧 Planned v0.2 |
+| ADD-04 | 5 | 🚧 Planned v0.2 |
+| ADD-05 | 5 | 🚧 Planned v0.2 |
+| OAUTH-01 | 5 | 🚧 Planned v0.2 |
+| OAUTH-02 | 5 | 🚧 Planned v0.2 |
+| OAUTH-03 | 5 | 🚧 Planned v0.2 |
+| OAUTH-04 | 5 | 🚧 Planned v0.2 |
+| OAUTH-05 | 5 | 🚧 Planned v0.2 |
+| MANUAL-01 | 5 | 🚧 Planned v0.2 |
+| MANUAL-02 | 5 | 🚧 Planned v0.2 |
+| ENV-01 | 5 | 🚧 Planned v0.2 |
+| ENV-02 | 5 | 🚧 Planned v0.2 |
+| ENV-03 | 5 | 🚧 Planned v0.2 |
+| BASE-01 | 6 | 🚧 Planned v0.2 |
+| BASE-02 | 6 | 🚧 Planned v0.2 |
+| BASE-03 | 6 | 🚧 Planned v0.2 |
+| LIST-01 | 5 | 🚧 Planned v0.2 |
+| ENC-01 | 1 | ✅ Shipped v0.1 |
+| ENC-02 | 1 | ✅ Shipped v0.1 |
+| REFR-01 | 13 | 📋 Planned |
+| REFR-02 | 13 | 📋 Planned |
+| REFR-03 | 13 | 📋 Planned |
+| SHEL-03 | 14 | 📋 Planned |
+| SHEL-04 | 14 | 📋 Planned |
+| SHEL-05 | 14 | 📋 Planned |
 
 **Coverage:**
 - v1 requirements: 19 total
 - Mapped to phases: 19
 - Unmapped: 0 ✓
+- v0.2 milestone: 16 requirements in Phases 5–6
 
 ---
-*Requirements defined: 2026-04-02*
-*Last updated: 2026-04-02 after initial definition*
+*Requirements defined: 2026-04-02 | v0.2 phase mapping added: 2026-04-02*
