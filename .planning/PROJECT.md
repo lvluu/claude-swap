@@ -14,19 +14,19 @@ A Bun-based CLI for managing multiple Claude Code accounts (API keys/tokens) and
 
 - ✓ Bun + TypeScript project scaffolding with quality gates (lint, format, test, typecheck) — v0.1
 - ✓ SQLite database schema with profiles, sessions, quotas, usage_log, settings tables — v0.2
+- ✓ **CLI-01**: `ccs switch <profile>` activates profile via `switch.ts` (shell/local/persistent modes) — Phase 4
+- ✓ **CLI-02**: `ccs default <profile>` stores/retrieves default from settings table — Phase 4
+- ✓ **CLI-06**: `ccs list` shows profiles with `*` (active) and `(default)` indicators — Phase 4
+- ✓ **CLI-07**: `ccs add --token --name` creates encrypted profile via `encryptForStorage()` — Phase 4
+- ✓ **CLI-08**: `ccs remove <profile>` deletes with `@clack/prompts.confirm()` or `--force` — Phase 4
+- ✓ **CLI-10**: `ccs env [profile]` outputs shell exports via `formatShell()`, with `--json`, `--reveal` security guards — Phase 4
 
 ### Active
 
-- [ ] **CLI-01**: `ccs switch <profile>` activates a profile by writing env vars; `claude` picks them up automatically
-- [ ] **CLI-02**: `ccs default <profile>` explicitly sets the default profile used in new terminals
 - [ ] **CLI-03**: New terminals start with the default profile active (via shell integration)
 - [ ] **CLI-04**: `ccs current` shows which profile is active in the current terminal
 - [ ] **CLI-05**: Per-terminal isolation: switching in Terminal A does not affect Terminal B
-- [ ] **CLI-06**: `ccs list` shows all profiles with active/default indicators
-- [ ] **CLI-07**: `ccs add` creates a new profile (manual token + custom endpoint support)
-- [ ] **CLI-08**: `ccs remove <profile>` deletes a profile
 - [ ] **CLI-09**: `ccs sessions` lists active terminal sessions
-- [ ] **CLI-10**: `ccs env [profile]` outputs env vars for shell integration (`--shell` exports, `--copy`)
 - [ ] **ENC-01**: Tokens encrypted at rest using AES-256-GCM with machine-derived key
 - [ ] **AUTH-01**: `claude login` OAuth token capture for profile creation
 
