@@ -76,13 +76,19 @@ export class Database {
   }
 
   static async initialize(): Promise<Database> {
+    return Database.initializeSync(getDbPath());
+  }
+
+  /** Synchronous initialiser so test fixtures can call it directly with a specific path.
+   *  Idempotent: if the same path is already initialised, returns the existing instance.
+   *  Thread-safe for parallel worker loading because it records the expected path. */
+  static initializeSync(path: string): Database {
     if (Database.instance) {
+      // Already initialised — workers can race here; ensure only the first path wins
       return Database.instance;
     }
 
-    const dbPath = getDbPath();
-
-    const db = new SQLiteDatabase(dbPath);
+    const db = new SQLiteDatabase(path);
     db.exec("PRAGMA journal_mode = WAL");
     db.exec("PRAGMA foreign_keys = ON");
 

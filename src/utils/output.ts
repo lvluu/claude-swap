@@ -21,9 +21,9 @@ export function getFlags(cmd: Command): CliFlags {
   };
 }
 
-/** Info output — suppressed when --quiet. */
+/** Info output — suppressed when --quiet or --json. */
 export function info(flags: CliFlags, message: string): void {
-  if (!flags.quiet) console.log(message);
+  if (!flags.quiet && !flags.json) console.log(message);
 }
 
 /** Error output — NEVER suppressed. */

@@ -3,11 +3,15 @@ import {
   Database,
   closeDatabase,
 } from "../../src/core/storage";
+import { Encryption } from "../../src/core/encryption";
 
 let db: Database;
 
 async function createTestDb(): Promise<Database> {
   const testDbPath = `/tmp/ccs-test-${Date.now()}-${Math.random().toString(36).slice(2)}.db`;
+  // Reset singletons before each test so they don't interfere with CLI tests
+  (Database as unknown as { instance: Database | null }).instance = null;
+  (Encryption as unknown as { _instance: unknown })._instance = null;
   const db = new Database(
     new (await import("bun:sqlite")).Database(testDbPath) as never,
   );
@@ -22,6 +26,9 @@ describe("Database", () => {
 
   afterEach(async () => {
     await closeDatabase();
+    // Restore singletons to null so subsequent test files can re-initialise
+    (Database as unknown as { instance: Database | null }).instance = null;
+    (Encryption as unknown as { _instance: unknown })._instance = null;
   });
 
   describe("Profile operations", () => {

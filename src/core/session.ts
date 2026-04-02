@@ -21,7 +21,11 @@ export function touchSession(): Session {
   const existing = db.getSessionByTerminal(terminal);
   if (existing) {
     db.updateSession(existing.id, { last_activity: now });
-    return { ...existing, last_activity: now };
+    const updated = { ...existing, last_activity: now };
+    // Propagate session ID so callers and downstream commands can re-identify
+    // this same session (e.g. listCommand looking up CCS_SESSION_ID).
+    Bun.env.CCS_SESSION_ID = updated.id;
+    return updated;
   }
 
   const session: Session = {
@@ -38,6 +42,7 @@ export function touchSession(): Session {
   };
 
   db.createSession(session);
+  Bun.env.CCS_SESSION_ID = session.id;
   return session;
 }
 

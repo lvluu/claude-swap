@@ -23,8 +23,9 @@ export async function switchCommand(profileName: string | undefined, cmd: Comman
     const result = await activateProfile(name as string, mode, flags);
 
     if (mode === "shell") {
-      // Shell output goes to stdout so eval can capture it
-      console.log(result.shellOutput);
+      // Shell output goes to stdout so eval can capture it; pass through
+      // info() so --quiet suppresses it on success while still printing on error
+      info(flags, result.shellOutput as string);
     } else {
       info(flags, `Switched to profile: ${result.context.profile.name}`);
     }

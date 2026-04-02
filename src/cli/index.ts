@@ -6,6 +6,8 @@ import {
   addCommand,
   removeCommand,
   defaultCommand,
+  listCommand,
+  envCommand,
 } from "./commands/index.js";
 
 const program = new Command();
@@ -56,8 +58,8 @@ program
   .command("list")
   .description("List all profiles")
   .option("--show-endpoints", "Show custom endpoint indicators")
-  .action((_opts) => {
-    console.log("list command - implementation pending");
+  .action(async function (this: Command) {
+    await listCommand(this);
   });
 
 program
@@ -117,8 +119,8 @@ program
   .option("--json", "Output as JSON")
   .option("--copy", "Copy to clipboard")
   .option("--reveal", "Show full token")
-  .action((_profile, _opts) => {
-    console.log("env command - implementation pending");
+  .action(async function (this: Command, profile: string | undefined) {
+    await envCommand(profile, this);
   });
 
 program
@@ -159,9 +161,11 @@ program
 export { program };
 
 // Initialize Encryption + Database before parsing
-initCli().then(() => {
-  program.parse();
-}).catch((err) => {
-  console.error((err as Error).message);
-  process.exit(1);
-});
+initCli()
+  .then(() => {
+    program.parse();
+  })
+  .catch((err) => {
+    console.error((err as Error).message);
+    process.exit(1);
+  });

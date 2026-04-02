@@ -57,7 +57,10 @@ export async function addCommand(
   }
 
   if (!profileName || !token) {
-    respondError(flags, "Profile name and token are required. Use: ccs add --name <name> --token <token>");
+    respondError(
+      flags,
+      "Profile name and token are required. Use: ccs add --name <name> --token <token>",
+    );
   }
 
   // Validate uniqueness
