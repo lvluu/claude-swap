@@ -1,8 +1,14 @@
-# ROADMAP.md — ccs v1.0
+# ROADMAP.md — ccs
 
-**Granularity**: Fine | **Total phases**: 10 | **Phases merged**: 2 (Issues #1, #2)
+## Milestones
 
-## Phase 1: Encryption Foundation
+- ✅ **v0.1 CLI Core** — Phases 1 (incomplete), 4 (shipped 2026-04-02)
+- 🚧 **v0.2 Encryption** — Phase 1 (planned)
+- 📋 **v0.3+** — Phases 2–3, 5–10 (planned)
+
+---
+
+## 🚧 Phase 1: Encryption Foundation
 
 **Issue**: #3 — Encryption Utilities
 **Goal**: Implement AES-256-GCM encryption with machine-derived key for token storage.
@@ -20,7 +26,7 @@
 
 ---
 
-## Phase 2: Session Tracking
+## 📋 Phase 2: Session Tracking
 
 **Issue**: #5 — Type Definitions and Interfaces
 **Goal**: Robust per-terminal session tracking with UUID primary keys and stale cleanup.
@@ -39,12 +45,12 @@
 
 ---
 
-## Phase 3: Shell Env Infrastructure
+## 📋 Phase 3: Shell Env Infrastructure
 
 **Issue**: #6 — Shell Integration Infrastructure
 **Goal**: Core modules for env var output, shell integration, and switch orchestration.
 
-**Requirements**: CLI-01, CLI-10
+**Requirements**: CLI-10
 
 **Modules to build**:
 - `src/core/session.ts` — terminal detection, UUID generation, session upsert
@@ -63,7 +69,7 @@
 
 ---
 
-## Phase 4: CLI Parser & Command Wiring
+## ✅ Phase 4: CLI Parser & Command Wiring (SHIPPED v0.1)
 
 **Issue**: #4 — CLI Parser and Command Structure
 **Goal**: Replace all Commander stub handlers with real implementations.
@@ -72,8 +78,8 @@
 
 **Plans**:
 - ✅ **04-01** — Infrastructure Layer (6 files: output, init, session, env-output, shell-integration, switch)
-- ✅ **04-02** — CLI Command Handlers (5 files: switch, add, remove, default, index; index.ts modified)
-- ⬜ **04-03** — Remaining Command Stubs
+- ✅ **04-02** — CLI Command Handlers (5 files: switch, add, remove, default, index)
+- ✅ **04-03** — Read-only Commands + Tests (4 files: list, env, tests/helpers, tests/cli/all.test.ts)
 
 **Success criteria**:
 1. `ccs switch <profile>` activates profile (writes env vars via `switch.ts`)
@@ -91,7 +97,7 @@
 
 ---
 
-## Phase 5: Profile Lifecycle
+## 📋 Phase 5: Profile Lifecycle
 
 **Issue**: #7 — Profile Management CRUD Operations; #8 — Manual Token Addition
 **Goal**: Full profile CRUD with OAuth capture and custom endpoint support.
@@ -111,7 +117,7 @@
 
 ---
 
-## Phase 6: Shell Integration Bootstrap
+## 📋 Phase 6: Shell Integration Bootstrap
 
 **Issue**: #8 — Shell Integration Bootstrap
 **Goal**: `ccs hook` command writes shell function for seamless activation.
@@ -132,7 +138,7 @@
 
 ---
 
-## Phase 7: Default Profile & Auto-Activate
+## 📋 Phase 7: Default Profile & Auto-Activate
 
 **Issue**: #9 — Basic Switch Command
 **Goal**: Explicit default management and per-terminal isolation.
@@ -152,7 +158,7 @@
 
 ---
 
-## Phase 8: Visibility Commands
+## 📋 Phase 8: Visibility Commands
 
 **Issue**: #10 — Full list/current/sessions visibility
 **Goal**: Complete visibility commands with `--json`, `--quiet` output modes.
@@ -173,7 +179,7 @@
 
 ---
 
-## Phase 9: Diagnostics & Doctor
+## 📋 Phase 9: Diagnostics & Doctor
 
 **Issue**: #11 — Health checks and self-repair
 **Goal**: `ccs doctor` with automated fix and migration capabilities.
@@ -192,7 +198,7 @@
 
 ---
 
-## Phase 10: Backup & Restore
+## 📋 Phase 10: Backup & Restore
 
 **Issue**: #12 — Export Profiles to JSON
 **Goal**: Portable encrypted export/import with password wrapping.
@@ -214,22 +220,23 @@
 
 ## Requirement Coverage
 
-| Requirement | Phase | Covered |
-|-------------|-------|---------|
-| CLI-01: switch activates profile | 4 | ✓ |
-| CLI-02: explicit default | 7 | ✓ |
-| CLI-03: new terminals auto-activate | 7 | ✓ |
-| CLI-04: current shows active profile | 7 | ✓ |
-| CLI-05: per-terminal isolation | 2, 7 | ✓ |
-| CLI-06: list with indicators | 4, 8 | ✓ |
-| CLI-07: add profile | 5 | ✓ |
-| CLI-08: remove profile | 5 | ✓ |
-| CLI-09: sessions command | 2, 8 | ✓ |
-| CLI-10: env output | 3, 4 | ✓ |
-| ENC-01: AES-256-GCM encryption | 1 | ✓ |
-| AUTH-01: OAuth token capture | 5 | ✓ |
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| CLI-01: switch activates profile | 4 | ✅ Shipped v0.1 |
+| CLI-02: explicit default | 4, 7 | ✅ Wired in Phase 4; full in Phase 7 |
+| CLI-03: new terminals auto-activate | 7 | 📋 |
+| CLI-04: current shows active profile | 7 | 📋 |
+| CLI-05: per-terminal isolation | 2, 7 | 📋 |
+| CLI-06: list with indicators | 4, 8 | ✅ Wired in Phase 4; full in Phase 8 |
+| CLI-07: add profile | 4, 5 | ✅ Wired in Phase 4; full in Phase 5 |
+| CLI-08: remove profile | 4, 5 | ✅ Wired in Phase 4; full in Phase 5 |
+| CLI-09: sessions command | 2, 8 | 📋 |
+| CLI-10: env output | 3, 4 | ✅ Shipped v0.1 |
+| ENC-01: AES-256-GCM encryption | 1 | 📋 Critical gap |
+| AUTH-01: OAuth token capture | 5 | 📋 |
+| SHL-01/02/03: shell hook | 6 | 📋 |
 
-**Coverage**: 12/12 requirements mapped to phases. ✓
+**Coverage**: 6/13 requirements shipped. Remaining work: Phases 1–3, 5–10.
 
 ---
 
@@ -246,4 +253,4 @@
 
 ---
 
-*Generated: 2026-04-01 via /gsd:new-project*
+*Generated: 2026-04-01 via /gsd:new-project | Updated: 2026-04-02 after v0.1 milestone*
