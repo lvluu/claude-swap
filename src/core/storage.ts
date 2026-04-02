@@ -1,4 +1,5 @@
 import { Database as SQLiteDatabase } from "bun:sqlite";
+import { mkdirSync } from "fs";
 import type { Profile, Session, Quota, UsageLog } from "../types/index.js";
 
 const SCHEMA_VERSION = 1;
@@ -62,9 +63,17 @@ CREATE INDEX IF NOT EXISTS idx_usage_log_profile ON usage_log(profile_id);
 CREATE INDEX IF NOT EXISTS idx_usage_log_timestamp ON usage_log(timestamp DESC);
 `;
 
-function getDbPath(): string {
+function getDbDir(): string {
   const home = Bun.env.HOME ?? "/tmp";
-  return `${home}/.config/ccs/data.db`;
+  return `${home}/.config/ccs`;
+}
+
+function getDbPath(): string {
+  return `${getDbDir()}/data.db`;
+}
+
+function ensureConfigDir(): void {
+  mkdirSync(getDbDir(), { recursive: true });
 }
 
 export class Database {
@@ -88,6 +97,7 @@ export class Database {
       return Database.instance;
     }
 
+    ensureConfigDir();
     const db = new SQLiteDatabase(path);
     db.exec("PRAGMA journal_mode = WAL");
     db.exec("PRAGMA foreign_keys = ON");

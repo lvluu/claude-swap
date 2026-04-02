@@ -241,11 +241,12 @@ describe("ccs switch", () => {
 describe("ccs add", () => {
   test("creates encrypted profile with --token and --name", async () => {
     const { addCommand } = await import("../../src/cli/commands/add.js");
+    const profileName = testProfileName("add");
     const { stdout } = await captureOutput(async () => {
       await addCommand({
         opts: () => ({
           token: "sk-ant-add-test",
-          name: testProfileName("add"),
+          name: profileName,
           baseUrl: null,
         }),
         parent: { opts: () => ({ quiet: false, json: false }) },
@@ -255,7 +256,7 @@ describe("ccs add", () => {
 
     const db = Database.getInstance();
     const profiles = db.getAllProfiles();
-    const created = profiles.find((p) => p.name.includes("add"));
+    const created = profiles.find((p) => p.name === profileName);
     expect(created).toBeDefined();
     expect(created!.token_encrypted).not.toBe("sk-ant-add-test");
     const { decryptFromStorage } = await import("../../src/core/encryption.js");
