@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v0.2
 milestone_name: Profile Management + OAuth2
 status: defining_requirements
-last_updated: "2026-04-02T00:00:00.000Z"
+last_updated: "2026-04-03T00:00:00.000Z"
 progress:
   total_phases: 0
   completed_phases: 0
@@ -35,9 +35,10 @@ See: `.planning/PROJECT.md` (updated 2026-04-02 for v0.2)
 
 | Phase | Milestone | Status | Notes |
 |-------|-----------|--------|-------|
+| 4 | v0.1 | ✅ Complete | 10 CLI commands wired (sessions, doctor, quota, stats, export, import, backup, restore, hook, current) + 8 test suites |
 | 5 | v0.2 | 📋 Todo | Interactive `ccs add` + OAuth2 flow |
 | 6 | v0.2 | 📋 Todo | Per-profile base URL + switch integration |
-| 1–4 | v0.1 | ✅ Complete | CLI Core (shipped v0.1) |
+| 1–3 | v0.1 | ✅ Complete | CLI Core (shipped v0.1) |
 
 ---
 
@@ -46,8 +47,8 @@ See: `.planning/PROJECT.md` (updated 2026-04-02 for v0.2)
 **Shipped:** 2026-04-02
 **Key accomplishment:** 6 CLI commands wired (switch, add, remove, default, list, env) with 49 tests passing
 
-**⚠️ Remaining:** `encryption.ts` is an empty stub — tokens stored via `ccs add` are **not encrypted**. ENC-01 deferred to v0.3.
+**Updated:** 2026-04-03 — Added 10 more commands (current, sessions, doctor, quota, stats, export, import, backup, restore, hook) with 37 new tests. 67+ tests passing total.
 
 ---
 
-*Last updated: 2026-04-02 — Milestone v0.2 started*
+*Last updated: 2026-04-03 — Phase 4 complete, Phase 5 planning next*
