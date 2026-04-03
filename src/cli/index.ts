@@ -8,6 +8,16 @@ import {
   defaultCommand,
   listCommand,
   envCommand,
+  currentCommand,
+  sessionsCommand,
+  doctorCommand,
+  quotaCommand,
+  statsCommand,
+  exportCommand,
+  importCommand,
+  backupCommand,
+  restoreCommand,
+  hookCommand,
 } from "./commands/index.js";
 
 const program = new Command();
@@ -73,15 +83,19 @@ program
   .command("export [file]")
   .description("Export profiles to JSON")
   .option("--encrypt", "Encrypt with password")
-  .action((_file, _opts) => {
-    console.log("export command - implementation pending");
+  .option("--password <pw>", "Encryption password")
+  .action(async (_file, _opts) => {
+    await exportCommand(_file, _opts as Command);
   });
 
 program
   .command("import <file>")
   .description("Import profiles from JSON")
-  .action((_file) => {
-    console.log("import command - implementation pending");
+  .option("--overwrite", "Overwrite existing profiles")
+  .option("--skip", "Skip existing profiles")
+  .option("--password <pw>", "Decryption password")
+  .action(async (_file, _opts) => {
+    await importCommand(_file, _opts as Command);
   });
 
 program
@@ -89,8 +103,8 @@ program
   .description("Show or manage quotas")
   .option("--daily <limit>", "Set daily limit")
   .option("--monthly <limit>", "Set monthly limit")
-  .action((_profile, _opts) => {
-    console.log("quota command - implementation pending");
+  .action(async (_profile, _opts) => {
+    await quotaCommand(_profile, _opts as Command);
   });
 
 program
@@ -99,8 +113,8 @@ program
   .option("--hourly", "Hourly breakdown")
   .option("--daily", "Daily breakdown")
   .option("--export <format>", "Export as CSV or JSON")
-  .action((_profile, _opts) => {
-    console.log("stats command - implementation pending");
+  .action(async (_profile, _opts) => {
+    await statsCommand(_profile, _opts as Command);
   });
 
 program
@@ -108,8 +122,8 @@ program
   .description("Show active profile and environment")
   .option("-s, --session <id>", "Target session ID")
   .option("--short", "Short output format")
-  .action((_opts) => {
-    console.log("current command - implementation pending");
+  .action(async (_opts) => {
+    await currentCommand(_opts as Command);
   });
 
 program
@@ -129,33 +143,44 @@ program
   .option("--current", "Show current terminal session")
   .option("--clean", "Remove stale sessions")
   .option("--kill <session>", "Kill a specific session")
-  .action((_opts) => {
-    console.log("sessions command - implementation pending");
+  .action(async (_opts) => {
+    await sessionsCommand(_opts as Command);
   });
 
 program
   .command("doctor [profile]")
   .description("Check profile health")
   .option("--fix", "Auto-fix issues")
-  .action((_profile, _opts) => {
-    console.log("doctor command - implementation pending");
+  .action(async (_profile, _opts) => {
+    await doctorCommand(_profile, _opts as Command);
   });
 
 program
   .command("backup")
   .description("Create backup of all profiles")
   .option("--encrypt", "Encrypt with password")
-  .option("--cloud", "Backup to cloud")
-  .action((_opts) => {
-    console.log("backup command - implementation pending");
+  .option("--password <pw>", "Encryption password")
+  .action(async (_opts) => {
+    await backupCommand(_opts as Command);
   });
 
 program
   .command("restore <file>")
   .description("Restore from backup")
-  .option("--latest", "Restore most recent backup")
-  .action((_file, _opts) => {
-    console.log("restore command - implementation pending");
+  .option("--overwrite", "Overwrite existing profiles")
+  .option("--skip", "Skip existing profiles")
+  .option("--password <pw>", "Decryption password")
+  .action(async (_file, _opts) => {
+    await restoreCommand(_file, _opts as Command);
+  });
+
+program
+  .command("hook <shell>")
+  .description("Output or install shell integration hook")
+  .option("--install", "Install the hook to the shell config")
+  .option("--uninstall", "Remove the hook from the shell config")
+  .action(async (_shell, _opts) => {
+    await hookCommand(_shell, _opts as Command);
   });
 
 export { program };
